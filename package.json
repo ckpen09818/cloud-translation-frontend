@@ -1,0 +1,51 @@
+{
+  "name": "cloud-translation-frontend",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write ./src/**/*.{js,svelte,html,ts}",
+    "lint": "eslint './src/**/*.{js,ts,svelte}'",
+    "lint:fix": "eslint --fix './src/**/*.{js,ts,svelte}'",
+    "prelint": "npm run format"
+  },
+  "dependencies": {
+    "ky": "^0.30.0",
+    "lodash": "^4.17.21",
+    "svelte-material-ui": "6.0.0-beta.16",
+    "svelte-spa-router": "^3.2.0"
+  },
+  "devDependencies": {
+    "@mdi/js": "^6.7.96",
+    "@smui/button": "6.0.0-beta.16",
+    "@smui/common": "6.0.0-beta.16",
+    "@smui/icon-button": "6.0.0-beta.16",
+    "@smui/list": "6.0.0-beta.16",
+    "@smui/menu-surface": "6.0.0-beta.16",
+    "@smui/segmented-button": "6.0.0-beta.16",
+    "@smui/tab": "6.0.0-beta.16",
+    "@smui/tab-bar": "6.0.0-beta.16",
+    "@smui/top-app-bar": "6.0.0-beta.16",
+    "@sveltejs/vite-plugin-svelte": "1.0.0-next.49",
+    "@tsconfig/svelte": "^3.0.0",
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^16",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "prettier": "^2.6.2",
+    "prettier-plugin-svelte": "^2.7.0",
+    "svelte": "^3.48.0",
+    "svelte-check": "^2.7.2",
+    "svelte-preprocess": "^4.10.7",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.3",
+    "vite": "^2.9.12",
+    "vite-plugin-windicss": "^1.8.4",
+    "windicss": "^3.5.4"
+  }
+}
