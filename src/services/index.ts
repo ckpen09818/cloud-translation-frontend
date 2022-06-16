@@ -4,6 +4,7 @@ const apiPath = `${import.meta.env.VITE_API_BASE_URL}/api`
 
 const baseApi = ky.create({ prefixUrl: apiPath })
 
+class HttpError extends Error {}
 export async function api<T>(url: string, options?: Options) {
   try {
     const resp = await baseApi(url, { ...options })
@@ -17,33 +18,5 @@ export async function api<T>(url: string, options?: Options) {
 }
 
 // const refreshToken: BeforeRetryHook = async ({ request, options, error, retryCount }) => {}
-
-class HttpError extends Error {}
-export async function translate(params: { text: string; language: ISO_639_1Code }) {
-  const resp = await api<string>('language/translate', {
-    method: 'GET',
-    searchParams: params,
-  })
-
-  return resp
-}
-
-export async function getLanguageList(language: ISO_639_1Code) {
-  const resp = await api<SupportLangList>(`language/list/${language}`, {
-    method: 'GET',
-  })
-  return resp
-}
-
-export type DetectLanguageResponse = {
-  confidence: number
-  input: string
-  language: ISO_639_1Code
-}
-export async function detectLanguage(language: string) {
-  const resp = await api<DetectLanguageResponse>('language/detect', {
-    method: 'GET',
-    searchParams: { text: language },
-  })
-  return resp
-}
+export * from './languages'
+export * from './list'

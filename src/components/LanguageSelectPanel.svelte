@@ -21,6 +21,7 @@ let selected: ISO_639_1Code
 let surface: MenuSurfaceComponentDev
 let toggle: boolean = false
 let searchLanguageKeyword: string = ''
+let searchLangInputElem: HTMLInputElement
 
 $: dispatch('langChange', selected)
 $: toggle, (searchLanguageKeyword = '')
@@ -45,6 +46,11 @@ async function handleLanguageChange(lang: ISO_639_1Code) {
 function handleLanguageSelectMenuToggle(event: CustomEvent<PointerEvent>) {
   event.stopPropagation()
   toggle = !toggle
+  if (toggle) {
+    requestAnimationFrame(() => {
+      searchLangInputElem.focus()
+    })
+  }
 }
 
 function handleSurfaceStateSync() {
@@ -93,6 +99,7 @@ onMount(() => {
   <MenuSurface bind:this={surface} anchorCorner="BOTTOM_LEFT" class="w-full" open={toggle}>
     <div class="p-2">
       <input
+        bind:this={searchLangInputElem}
         class="w-full p-3 outline-none"
         type="text"
         placeholder="Search languages"

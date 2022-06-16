@@ -11,40 +11,42 @@ import { getBrowserLang, isEmptyString } from '@/utils'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
 
-let rawText: string = ''
+let originalText: string = ''
 let translatedText: string = ''
+let translateTo: ISO_639_1Code
+let translateFrom: ISO_639_1Code
+
 let languageOptions: SupportLangList = []
 let languageCodeMap: Record<ISO_639_1Code, string>
 let differentLanguageTip: string = ''
-let activeLanguage: ISO_639_1Code
 
-const ThrottledDetectLanguage = throttle(async () => {
-  const resp = await detectLanguage(rawText)
-  return resp.data.language
+const ThrottledDetectLanguage = throttle(async (lang: ISO_639_1Code) => {
+  const resp = await detectLanguage(originalText)
+  translateFrom = resp.data.language
+  differentLanguageTip = lang !== translateFrom ? translateFrom : ''
 }, 2000)
 
 const handleLangChange = debounce(async ({ detail: lang }: CustomEvent<ISO_639_1Code>) => {
-  activeLanguage = lang
-  if (isEmptyString(rawText)) return
-  const originalLanguage = await ThrottledDetectLanguage()
-  differentLanguageTip = lang !== originalLanguage ? originalLanguage : ''
-  //translate
-  throttledTranslate({ text: rawText, language: activeLanguage })
+  translateTo = lang
+  if (isEmptyString(originalText)) return
+  ThrottledDetectLanguage(lang)
+  throttledTranslate()
 }, 800)
 
-async function translateText(params: { text: string; language: ISO_639_1Code }) {
-  if (isEmptyString(params.text)) return
-  const resp = await translate(params)
+async function translateText() {
+  if (isEmptyString(originalText)) return
+  const resp = await translate({ text: originalText, translateTo, translateFrom })
   translatedText = resp.data
 }
 const throttledTranslate = throttle(translateText, 2000)
 
-const handleTextChange = debounce(() => {
-  throttledTranslate({ text: rawText, language: activeLanguage })
+const handleTextChange = debounce(async () => {
+  await ThrottledDetectLanguage(translateTo)
+  await throttledTranslate()
 }, 1000)
 
 function cleanTextareaValue() {
-  rawText = ''
+  originalText = ''
   translatedText = ''
 }
 
@@ -69,7 +71,7 @@ onMount(async () => {
 <div>
   <LanguageSelectPanel list={languageOptions} lanCodeMap={languageCodeMap} on:langChange={handleLangChange} />
   <div class="flex flex-col gap-4">
-    <Textarea bind:value={rawText} on:input={handleTextChange}>
+    <Textarea bind:value={originalText} on:input={handleTextChange}>
       <div class="w-full flex p-2" slot="extra">
         {#if differentLanguageTip.length > 0}
           <div class="pl-3">
