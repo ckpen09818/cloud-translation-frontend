@@ -5,8 +5,13 @@ type TranslateQuery = {
   translateTo: ISO_639_1Code
   translateFrom: ISO_639_1Code
 }
+type TranslateResponse = {
+  saved: boolean
+  text: string
+  translateTo: ISO_639_1Code
+}
 export async function translate(params: TranslateQuery) {
-  const resp = await api<string>('language/translate', {
+  const resp = await api<TranslateResponse>('language/translate', {
     method: 'POST',
     searchParams: params,
   })
@@ -31,5 +36,14 @@ export async function detectLanguage(language: string) {
     method: 'POST',
     searchParams: { text: language },
   })
+  return resp
+}
+
+export async function changeTranslationSaveState(params: { text: string; translateTo: ISO_639_1Code; saved: boolean }) {
+  const resp = await api<string>('language/saved', {
+    method: 'PATCH',
+    json: params,
+  })
+
   return resp
 }

@@ -6,7 +6,7 @@ import Textarea from '@/components/Textarea.svelte'
 import LanguageSelectPanel from '@/components/LanguageSelectPanel.svelte'
 import { mdiClose, mdiStarOutline, mdiStar, mdiHistory } from '@mdi/js'
 import IconButtonWithDesc from '@/components/IconButtonWithDesc.svelte'
-import { detectLanguage, getLanguageList, translate } from '@/services'
+import { detectLanguage, getLanguageList, translate, changeTranslationSaveState } from '@/services'
 import { getBrowserLang, isEmptyString } from '@/utils'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
@@ -15,6 +15,7 @@ let originalText: string = ''
 let translatedText: string = ''
 let translateTo: ISO_639_1Code
 let translateFrom: ISO_639_1Code
+let saved = false
 
 let languageOptions: SupportLangList = []
 let languageCodeMap: Record<ISO_639_1Code, string>
@@ -36,7 +37,8 @@ const handleLangChange = debounce(async ({ detail: lang }: CustomEvent<ISO_639_1
 async function translateText() {
   if (isEmptyString(originalText)) return
   const resp = await translate({ text: originalText, translateTo, translateFrom })
-  translatedText = resp.data
+  translatedText = resp.data.text
+  saved = resp.data.saved
 }
 const throttledTranslate = throttle(translateText, 2000)
 
@@ -48,6 +50,11 @@ const handleTextChange = debounce(async () => {
 function cleanTextareaValue() {
   originalText = ''
   translatedText = ''
+}
+
+function toggleSaveState() {
+  saved = !saved
+  changeTranslationSaveState({ text: originalText, translateTo, saved })
 }
 
 onMount(async () => {
@@ -90,10 +97,9 @@ onMount(async () => {
     </Textarea>
 
     <Textarea bind:value={translatedText} placeholder="Translation">
-      // TODO: saved translation
-      <IconButton on:click={cleanTextareaValue} slot="corner">
+      <IconButton on:click={toggleSaveState} slot="corner">
         <Icon component={Svg} viewBox="0 0 24 24">
-          <path d={mdiStarOutline} />
+          <path d={saved ? mdiStar : mdiStarOutline} />
         </Icon>
       </IconButton>
     </Textarea>
