@@ -1,5 +1,5 @@
 import { wrap } from 'svelte-spa-router/wrap'
-import Home from './pages/Home.svelte'
+import Home from './pages/Home/Home.svelte'
 
 const routes = {
   // Exact path

@@ -3,6 +3,7 @@ import { onMount } from 'svelte'
 import IconButton, { Icon } from '@smui/icon-button'
 import { Svg } from '@smui/common/elements'
 import Textarea from '@/components/Textarea.svelte'
+import Drawer from '@/components/Drawer.svelte'
 import LanguageSelectPanel from '@/components/LanguageSelectPanel.svelte'
 import { mdiClose, mdiStarOutline, mdiStar, mdiHistory } from '@mdi/js'
 import IconButtonWithDesc from '@/components/IconButtonWithDesc.svelte'
@@ -10,12 +11,14 @@ import { detectLanguage, getLanguageList, translate, changeTranslationSaveState 
 import { getBrowserLang, isEmptyString } from '@/utils'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
+import HistoryActionWithDrawer from './Components/HistoryActionWithDrawer.svelte'
 
 let originalText: string = ''
 let translatedText: string = ''
 let translateTo: ISO_639_1Code
 let translateFrom: ISO_639_1Code
 let saved = false
+let open = false
 
 let languageOptions: SupportLangList = []
 let languageCodeMap: Record<ISO_639_1Code, string>
@@ -108,7 +111,12 @@ onMount(async () => {
     </Textarea>
   </div>
   <div class="flex justify-center items-center gap-8 mt-4">
-    <IconButtonWithDesc desc="History" icon={mdiHistory} />
+    <HistoryActionWithDrawer bind:open />
+    <!-- <IconButtonWithDesc desc="History" icon={mdiHistory} bind:active={open} /> -->
     <IconButtonWithDesc desc="Saved" icon={mdiStar} />
   </div>
 </div>
+
+<!-- <Drawer bind:open>
+  <div>hehexd</div>
+</Drawer> -->
