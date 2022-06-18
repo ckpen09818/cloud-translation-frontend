@@ -43,6 +43,7 @@ async function translateText() {
 const throttledTranslate = throttle(translateText, 2000)
 
 const handleTextChange = debounce(async () => {
+  if (isEmptyString(originalText)) return
   await ThrottledDetectLanguage(translateTo)
   await throttledTranslate()
 }, 1000)
@@ -98,9 +99,11 @@ onMount(async () => {
 
     <Textarea bind:value={translatedText} placeholder="Translation">
       <IconButton on:click={toggleSaveState} slot="corner">
-        <Icon component={Svg} viewBox="0 0 24 24">
-          <path d={saved ? mdiStar : mdiStarOutline} />
-        </Icon>
+        {#if translatedText.length}
+          <Icon component={Svg} viewBox="0 0 24 24">
+            <path d={saved ? mdiStar : mdiStarOutline} />
+          </Icon>
+        {/if}
       </IconButton>
     </Textarea>
   </div>

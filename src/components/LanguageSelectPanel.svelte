@@ -8,14 +8,16 @@ import MenuSurface from '@smui/menu-surface'
 import { Svg } from '@smui/common/elements'
 import { mdiChevronUp, mdiChevronDown, mdiCheck } from '@mdi/js'
 import debounce from 'lodash/debounce'
+import { media } from '@/utils'
 
 import type { MenuSurfaceComponentDev } from '@smui/menu-surface'
 
-const MAX_FREQUENTLY_LANG_SHOW = 4
 const dispatch = createEventDispatcher()
 
 export let list: SupportLangList = []
 export let lanCodeMap: Record<ISO_639_1Code, string>
+
+let numberOfFrequentlyLangShow = 4
 let frequentlyUsedLangs: ISO_639_1Code[] = ['en']
 let selected: ISO_639_1Code
 let surface: MenuSurfaceComponentDev
@@ -25,6 +27,17 @@ let searchLangInputElem: HTMLInputElement
 
 $: dispatch('langChange', selected)
 $: toggle, (searchLanguageKeyword = '')
+
+$: {
+  if ($media.lg || $media.xl) numberOfFrequentlyLangShow = 4
+  else if ($media.sm || $media.md) numberOfFrequentlyLangShow = 3
+  else numberOfFrequentlyLangShow = 2
+
+  if (frequentlyUsedLangs.length > numberOfFrequentlyLangShow) {
+    frequentlyUsedLangs.pop()
+    frequentlyUsedLangs = frequentlyUsedLangs
+  }
+}
 
 const handleSearchLangChange = debounce((e: Event) => {
   const value = (e.target as HTMLInputElement).value
@@ -37,7 +50,7 @@ async function handleLanguageChange(lang: ISO_639_1Code) {
     selected = lang
     return
   }
-  if (frequentlyUsedLangs.length >= MAX_FREQUENTLY_LANG_SHOW) frequentlyUsedLangs.pop()
+  if (frequentlyUsedLangs.length >= numberOfFrequentlyLangShow) frequentlyUsedLangs.pop()
   frequentlyUsedLangs = [lang, ...frequentlyUsedLangs]
   await tick()
   selected = lang
@@ -89,13 +102,12 @@ onMount(() => {
       </Tab>
     </TabBar>
   </div>
-  <div>
-    <IconButton class="material-icons" on:click={(e) => handleLanguageSelectMenuToggle(e)}>
-      <Icon component={Svg} viewBox="0 0 24 24">
-        <path d={toggle ? mdiChevronUp : mdiChevronDown} />
-      </Icon>
-    </IconButton>
-  </div>
+
+  <IconButton class="material-icons" on:click={(e) => handleLanguageSelectMenuToggle(e)}>
+    <Icon component={Svg} viewBox="0 0 24 24">
+      <path d={toggle ? mdiChevronUp : mdiChevronDown} />
+    </Icon>
+  </IconButton>
   <MenuSurface bind:this={surface} anchorCorner="BOTTOM_LEFT" class="w-full" open={toggle}>
     <div class="p-2">
       <input
