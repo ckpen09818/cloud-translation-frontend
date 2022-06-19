@@ -6,18 +6,17 @@ Backend project [cloud-translation-backend](https://github.com/ckpen09818/cloud-
 
 ### Installation
 
+#### Use localhost
+
 ```
 pnpm install
 ```
 
-### Started
-
 #### Use devcontainer in vscode
 
 install vscode extension [**Remote - Containers**](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
 
-#### Use localhost
+### Started
 
 ```
 pnpm dev
