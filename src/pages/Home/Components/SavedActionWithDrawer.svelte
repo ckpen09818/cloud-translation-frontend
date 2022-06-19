@@ -2,22 +2,21 @@
 import { IconButtonWithDesc, Drawer, SvgIconButton } from '@/components'
 import { mdiStar, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import List from '@smui/list'
-import { getSavedTranslationList } from '@/services'
+import { getSavedTranslationList, type GetTranslationListParams } from '@/services'
 import TranslationCard from './TranslationCard.svelte'
 
 export let open = false
 
 let list: Array<Translation> = []
 let curPage = 1
-let pagination: SavedPagination = {
+let pagination: Pagination = {
   pageSize: 10,
   next: null,
   hasMore: false,
   total: 0,
 }
 
-type GetSavedTranslationParams = Parameters<typeof getSavedTranslationList>[0]
-async function getSavedTranslation(params: GetSavedTranslationParams = { pageSize: pagination.pageSize }) {
+async function getSavedTranslation(params: GetTranslationListParams = { pageSize: pagination.pageSize }) {
   const resp = await getSavedTranslationList(params)
   list = resp.data.list
   pagination = resp.data.paging

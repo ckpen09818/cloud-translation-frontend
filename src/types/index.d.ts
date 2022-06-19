@@ -126,11 +126,8 @@ interface Translation {
 
 interface Pagination {
   pageSize: pageSize
-  next: number | string | null
+  next: number |  null
   hasMore: boolean
-}
-
-interface SavedPagination extends Pagination {
-  next: number | null
   total: number
 }
+
