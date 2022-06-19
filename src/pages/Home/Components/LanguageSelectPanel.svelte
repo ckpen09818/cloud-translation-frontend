@@ -30,8 +30,9 @@ $: toggle, (searchLanguageKeyword = '')
 
 $: {
   if ($media.lg || $media.xl) numberOfFrequentlyLangShow = 4
-  else if ($media.sm || $media.md) numberOfFrequentlyLangShow = 3
-  else numberOfFrequentlyLangShow = 2
+  else if ($media.md) numberOfFrequentlyLangShow = 3
+  else if ($media.sm) numberOfFrequentlyLangShow = 2
+  else numberOfFrequentlyLangShow = 1
 
   if (frequentlyUsedLangs.length > numberOfFrequentlyLangShow) {
     frequentlyUsedLangs.pop()
@@ -119,7 +120,7 @@ onMount(() => {
         on:input={(e) => handleSearchLangChange(e)}
       />
     </div>
-    <div class="grid grid-cols-4 gap-2 p-3">
+    <div class="grid grid-cols-4 <sm:grid-cols-2 <md:grid-cols-3 gap-2 p-3">
       {#each list.filter(({ name }) => name
           .toLowerCase()
           .includes(searchLanguageKeyword.toLowerCase())) as option (option.code)}
