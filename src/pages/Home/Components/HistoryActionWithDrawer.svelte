@@ -9,7 +9,7 @@ export let open = false
 let list: Array<Translation> = []
 
 async function getTranslationHistory() {
-  const resp = await getTranslationHistoryList({ pageSize: '20' })
+  const resp = await getTranslationHistoryList({ pageSize: 20 })
   list = resp.data.list
   console.log(resp.data)
 }

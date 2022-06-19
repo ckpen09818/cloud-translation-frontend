@@ -123,3 +123,14 @@ interface Translation {
   impressions: number
   saved: boolean
 }
+
+interface Pagination {
+  pageSize: pageSize
+  next: number | string | null
+  hasMore: boolean
+}
+
+interface SavedPagination extends Pagination {
+  next: number | null
+  total: number
+}

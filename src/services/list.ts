@@ -1,12 +1,8 @@
 import { api } from '.'
 
-type TranslationListResponse = {
+type TranslationListResponse<T = Pagination> = {
   list: Array<Translation>
-  page: {
-    pageSize: PageSize
-    nextCursor: null | string
-    hasMore: boolean
-  }
+  paging: T
 }
 
 export async function getTranslationHistoryList(params: { pageSize: PageSize; cursor?: string }) {
@@ -18,8 +14,8 @@ export async function getTranslationHistoryList(params: { pageSize: PageSize; cu
   return resp
 }
 
-export async function getSavedTranslationList(params: { pageSize: PageSize; cursor?: string }) {
-  const resp = await api<TranslationListResponse>('list/saved', {
+export async function getSavedTranslationList(params: { pageSize: PageSize; page?: number }) {
+  const resp = await api<TranslationListResponse<SavedPagination>>('list/saved', {
     method: 'GET',
     searchParams: params,
   })
