@@ -1,26 +1,26 @@
 <script lang="ts">
 import { onMount } from 'svelte'
-import IconButton, { Icon } from '@smui/icon-button'
-import { Svg } from '@smui/common/elements'
-import Textarea from '@/components/Textarea.svelte'
-import LanguageSelectPanel from '@/components/LanguageSelectPanel.svelte'
+import { SvgIconButton, Textarea } from '@/components'
+import LanguageSelectPanel from './Components/LanguageSelectPanel.svelte'
+import HistoryActionWithDrawer from './Components/HistoryActionWithDrawer.svelte'
+import SavedActionWithDrawer from './Components/SavedActionWithDrawer.svelte'
+
 import { mdiClose, mdiStarOutline, mdiStar } from '@mdi/js'
 import { detectLanguage, getLanguageList, translate, changeTranslationSaveState } from '@/services'
 import { getBrowserLang, isEmptyString } from '@/utils'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
-import HistoryActionWithDrawer from './Components/HistoryActionWithDrawer.svelte'
-import SavedActionWithDrawer from './Components/SavedActionWithDrawer.svelte'
+
+import { languageOptions, languageTextMap } from '@/stores'
 
 let originalText: string = ''
 let translatedText: string = ''
 let translateTo: ISO_639_1Code
 let translateFrom: ISO_639_1Code
 let saved = false
-let open = false
+let historytoggle = false
+let savedToggle = false
 
-let languageOptions: SupportLangList = []
-let languageCodeMap: Record<ISO_639_1Code, string>
 let differentLanguageTip: string = ''
 
 const ThrottledDetectLanguage = throttle(async (lang: ISO_639_1Code) => {
@@ -65,52 +65,45 @@ onMount(async () => {
   const languageList = localStorage.getItem(browserDefaultLanguage)
   if (!languageList) {
     const resp = await getLanguageList(browserDefaultLanguage)
-    languageOptions = resp.data
+    $languageOptions = resp.data
     localStorage.setItem(browserDefaultLanguage, JSON.stringify(languageOptions))
   } else {
-    languageOptions = JSON.parse(languageList) as SupportLangList
+    $languageOptions = JSON.parse(languageList) as SupportLangList
   }
-
-  languageCodeMap = languageOptions.reduce((map, item) => {
-    map[item.code] = item.name
-    return map
-  }, {} as Record<ISO_639_1Code, string>)
 })
 </script>
 
 <div>
-  <LanguageSelectPanel list={languageOptions} lanCodeMap={languageCodeMap} on:langChange={handleLangChange} />
+  <LanguageSelectPanel on:langChange={handleLangChange} />
   <div class="flex flex-col gap-4">
     <Textarea bind:value={originalText} on:input={handleTextChange}>
       <div class="w-full flex p-2" slot="extra">
         {#if differentLanguageTip.length > 0}
           <div class="pl-3">
             Translate from:
-            <span tabindex="0" role="button" class="ml-4 text-blue-400 cursor-pointer"
-              >{languageCodeMap[differentLanguageTip]}</span
-            >
+            <span tabindex="0" role="button" class="ml-4 text-blue-400 cursor-pointer">
+              {$languageTextMap[differentLanguageTip]}
+            </span>
           </div>
         {/if}
       </div>
-      <IconButton on:click={cleanTextareaValue} slot="corner">
-        <Icon component={Svg} viewBox="0 0 24 24">
-          <path d={mdiClose} />
-        </Icon>
-      </IconButton>
+      <SvgIconButton svgIcon={mdiClose} on:click={cleanTextareaValue} slot="corner" />
     </Textarea>
 
     <Textarea bind:value={translatedText} placeholder="Translation">
-      <IconButton on:click={toggleSaveState} slot="corner">
+      <svelte:fragment slot="corner">
         {#if translatedText.length}
-          <Icon component={Svg} viewBox="0 0 24 24">
-            <path d={saved ? mdiStar : mdiStarOutline} />
-          </Icon>
+          <SvgIconButton
+            title={saved ? 'Remove from saved' : 'Save translation'}
+            svgIcon={saved ? mdiStar : mdiStarOutline}
+            on:click={toggleSaveState}
+          />
         {/if}
-      </IconButton>
+      </svelte:fragment>
     </Textarea>
   </div>
   <div class="flex justify-center items-center gap-8 mt-4">
-    <HistoryActionWithDrawer bind:open />
-    <!-- <SavedActionWithDrawer bind:open /> -->
+    <HistoryActionWithDrawer bind:open={historytoggle} />
+    <SavedActionWithDrawer bind:open={savedToggle} />
   </div>
 </div>

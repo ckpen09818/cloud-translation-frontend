@@ -114,3 +114,12 @@ type ISO_639_1Code =
 interface Dictionary<T> {
   [key: string]: T
 }
+
+interface Translation {
+  originalText: string
+  text: string
+  translateFrom: ISO_639_1Code
+  translateTo: ISO_639_1Code
+  impressions: number
+  saved: boolean
+}

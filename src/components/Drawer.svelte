@@ -2,9 +2,8 @@
 import { fly, fade } from 'svelte/transition'
 
 export let open = false
-export let duration = 0.2
-export let placement = 'left'
-export let size = null
+export let width = '600px'
+export let height = '100%'
 
 function handleClickAway() {
   open = false
@@ -16,7 +15,7 @@ function handleClickAway() {
     {#if open}
       <div class="overlay" transition:fade on:click={handleClickAway} />
     {/if}
-    <div class="drawer" transition:fly={{ x: 200, duration: 500 }}>
+    <div class="drawer" style={`--width:${width}; height:${height};`} transition:fly={{ x: 200, duration: 500 }}>
       <slot />
     </div>
   </div>
@@ -46,9 +45,9 @@ function handleClickAway() {
   top: 0;
   right: 0;
   background: white;
-  overflow: auto;
-  width: 30%;
-  height: 100%;
+  overflow: hidden;
+  width: var(--width);
+  height: var(--height);
   z-index: 1;
 }
 </style>

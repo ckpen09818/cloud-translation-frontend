@@ -3,30 +3,30 @@ import { onMount, createEventDispatcher, tick } from 'svelte'
 import Tab, { Label } from '@smui/tab'
 import TabBar from '@smui/tab-bar'
 import Button from '@smui/button'
-import IconButton, { Icon } from '@smui/icon-button'
 import MenuSurface from '@smui/menu-surface'
+import { Icon } from '@smui/icon-button'
 import { Svg } from '@smui/common/elements'
 import { mdiChevronUp, mdiChevronDown, mdiCheck } from '@mdi/js'
-import debounce from 'lodash/debounce'
+
+import { SvgIconButton } from '@/components'
+import { languageOptions, languageTextMap } from '@/stores'
 import { media } from '@/utils'
+import debounce from 'lodash/debounce'
 
 import type { MenuSurfaceComponentDev } from '@smui/menu-surface'
 
 const dispatch = createEventDispatcher()
-
-export let list: SupportLangList = []
-export let lanCodeMap: Record<ISO_639_1Code, string>
 
 let numberOfFrequentlyLangShow = 4
 let frequentlyUsedLangs: ISO_639_1Code[] = ['en']
 let selected: ISO_639_1Code
 let surface: MenuSurfaceComponentDev
 let toggle: boolean = false
-let searchLanguageKeyword: string = ''
-let searchLangInputElem: HTMLInputElement
+let translationLangKeyword: string = ''
+let translationLangInputElem: HTMLInputElement
 
 $: dispatch('langChange', selected)
-$: toggle, (searchLanguageKeyword = '')
+$: toggle, (translationLangKeyword = '')
 
 $: {
   if ($media.lg || $media.xl) numberOfFrequentlyLangShow = 4
@@ -42,7 +42,7 @@ $: {
 
 const handleSearchLangChange = debounce((e: Event) => {
   const value = (e.target as HTMLInputElement).value
-  searchLanguageKeyword = value
+  translationLangKeyword = value
 }, 500)
 
 async function handleLanguageChange(lang: ISO_639_1Code) {
@@ -62,7 +62,7 @@ function handleLanguageSelectMenuToggle(event: CustomEvent<PointerEvent>) {
   toggle = !toggle
   if (toggle) {
     requestAnimationFrame(() => {
-      searchLangInputElem.focus()
+      translationLangInputElem.focus()
     })
   }
 }
@@ -99,31 +99,26 @@ onMount(() => {
   <div class="flex mr-4">
     <TabBar tabs={frequentlyUsedLangs} let:tab bind:active={selected}>
       <Tab {tab} minWidth>
-        <Label>{lanCodeMap?.[tab]}</Label>
+        <Label>{$languageTextMap?.[tab]}</Label>
       </Tab>
     </TabBar>
   </div>
-
-  <IconButton class="material-icons" on:click={(e) => handleLanguageSelectMenuToggle(e)}>
-    <Icon component={Svg} viewBox="0 0 24 24">
-      <path d={toggle ? mdiChevronUp : mdiChevronDown} />
-    </Icon>
-  </IconButton>
+  <SvgIconButton svgIcon={toggle ? mdiChevronUp : mdiChevronDown} on:click={(e) => handleLanguageSelectMenuToggle(e)} />
   <MenuSurface bind:this={surface} anchorCorner="BOTTOM_LEFT" class="w-full" open={toggle}>
     <div class="p-2">
       <input
-        bind:this={searchLangInputElem}
+        bind:this={translationLangInputElem}
         class="w-full p-3 outline-none"
         type="text"
         placeholder="Search languages"
-        value={searchLanguageKeyword}
+        value={translationLangKeyword}
         on:input={(e) => handleSearchLangChange(e)}
       />
     </div>
     <div class="grid grid-cols-4 <sm:grid-cols-2 <md:grid-cols-3 gap-2 p-3">
-      {#each list.filter(({ name }) => name
+      {#each $languageOptions.filter(({ name }) => name
           .toLowerCase()
-          .includes(searchLanguageKeyword.toLowerCase())) as option (option.code)}
+          .includes(translationLangKeyword.toLowerCase())) as option (option.code)}
         {@const isActive = selected === option.code}
         <Button on:click={() => handleLanguageChange(option.code)} variant={isActive ? 'unelevated' : 'text'}>
           {#if isActive}

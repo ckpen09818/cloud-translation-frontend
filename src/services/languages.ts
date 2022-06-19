@@ -40,7 +40,7 @@ export async function detectLanguage(language: string) {
 }
 
 export async function changeTranslationSaveState(params: { text: string; translateTo: ISO_639_1Code; saved: boolean }) {
-  const resp = await api<string>('language/saved', {
+  const resp = await api('language/saved', {
     method: 'PATCH',
     json: params,
   })
