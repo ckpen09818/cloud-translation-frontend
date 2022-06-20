@@ -2,16 +2,22 @@
 import { onMount } from 'svelte'
 import { SvgIconButton, Textarea } from '@/components'
 import LanguageSelectPanel from './Components/LanguageSelectPanel.svelte'
-import HistoryActionWithDrawer from './Components/HistoryActionWithDrawer.svelte'
-import SavedActionWithDrawer from './Components/SavedActionWithDrawer.svelte'
+import ActionWithDrawer from './Components/ActionWithDrawer.svelte'
+import {
+  getHotTranslationList,
+  getHistoryTranslationList,
+  getSavedTranslationList,
+  detectLanguage,
+  getLanguageList,
+  translate,
+  changeTranslationSaveState,
+} from '@/services'
+import { languageOptions, languageTextMap } from '@/stores'
 
-import { mdiClose, mdiStarOutline, mdiStar } from '@mdi/js'
-import { detectLanguage, getLanguageList, translate, changeTranslationSaveState } from '@/services'
+import { mdiHistory, mdiClose, mdiStarOutline, mdiStar, mdiFire } from '@mdi/js'
 import { getBrowserLang, isEmptyString } from '@/utils'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
-
-import { languageOptions, languageTextMap } from '@/stores'
 
 let originalText: string = ''
 let translatedText: string = ''
@@ -20,6 +26,7 @@ let translateFrom: ISO_639_1Code
 let saved = false
 let historytoggle = false
 let savedToggle = false
+let hotToggle = false
 
 let differentLanguageTip: string = ''
 
@@ -103,7 +110,18 @@ onMount(async () => {
     </Textarea>
   </div>
   <div class="flex justify-center items-center gap-8 mt-4">
-    <HistoryActionWithDrawer bind:open={historytoggle} />
-    <SavedActionWithDrawer bind:open={savedToggle} />
+    <ActionWithDrawer
+      bind:open={historytoggle}
+      desc="History"
+      svgIcon={mdiHistory}
+      getTranslationListFn={getHistoryTranslationList}
+    />
+    <ActionWithDrawer
+      bind:open={savedToggle}
+      desc="Saved"
+      svgIcon={mdiStar}
+      getTranslationListFn={getSavedTranslationList}
+    />
+    <ActionWithDrawer bind:open={hotToggle} desc="Hot" svgIcon={mdiFire} getTranslationListFn={getHotTranslationList} />
   </div>
 </div>

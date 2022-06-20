@@ -1,11 +1,15 @@
 <script lang="ts">
 import { IconButtonWithDesc, Drawer, SvgIconButton } from '@/components'
-import { mdiStar, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
+import { mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import List from '@smui/list'
-import { getSavedTranslationList, type GetTranslationListParams } from '@/services'
 import TranslationCard from './TranslationCard.svelte'
 
+import type { GetTranslationListFn, GetTranslationListParams } from '@/services'
+
 export let open = false
+export let desc = ''
+export let svgIcon: string
+export let getTranslationListFn: GetTranslationListFn
 
 let list: Array<Translation> = []
 let curPage = 1
@@ -16,27 +20,27 @@ let pagination: Pagination = {
   total: 0,
 }
 
-async function getSavedTranslation(params: GetTranslationListParams = { pageSize: pagination.pageSize }) {
-  const resp = await getSavedTranslationList(params)
+async function getTranslationList(params: GetTranslationListParams = { pageSize: pagination.pageSize }) {
+  const resp = await getTranslationListFn(params)
   list = resp.data.list
   pagination = resp.data.paging
 }
 
-const changePage = (page: number) => getSavedTranslation({ pageSize: pagination.pageSize, page })
+const changePage = (page: number) => getTranslationList({ pageSize: pagination.pageSize, page })
 const nextPage = () => changePage(++curPage)
 const prevPage = () => changePage(--curPage)
 
 $: if (open) {
-  getSavedTranslation()
+  getTranslationList()
 } else {
   curPage = 1
 }
 </script>
 
-<IconButtonWithDesc desc="Saved" icon={mdiStar} bind:active={open} />
+<IconButtonWithDesc {desc} icon={svgIcon} bind:active={open} />
 <Drawer bind:open width="360px">
   <div class="p-4 pb-6 border-b-1 static">
-    <h1 class="text-3xl font-medium text-left">Saved</h1>
+    <h1 class="text-3xl font-medium text-left">{desc}</h1>
     <SvgIconButton class="absolute top-1 right-1" on:click={() => (open = false)} svgIcon={mdiClose} />
   </div>
   <div class="border-b-1 p-1 flex justify-between items-center">
