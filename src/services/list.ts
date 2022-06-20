@@ -14,7 +14,8 @@ export type Action = keyof typeof translationListPathMap
 export type GetTranslationListFn = typeof getHistoryTranslationList
 
 export const getTranslationListFactory = (action: Action) => async (params: GetTranslationListParams) => {
-  const resp = await api<TranslationListResponse>(`list/${action}`, {
+  const path = translationListPathMap[action]
+  const resp = await api<TranslationListResponse>(`list/${path}`, {
     method: 'GET',
     searchParams: params,
   })
